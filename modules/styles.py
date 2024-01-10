@@ -1,7 +1,4 @@
 import streamlit as st
-import os
-import sys
-
 
 def hide_sidebar():
 
