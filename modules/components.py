@@ -22,18 +22,16 @@ def get_landing_buttons():
     styles.get_button_styles()
     
     st.markdown("""
-
-        <div style="position: fixed; bottom: 20%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;">
             
+        <div class="landing-button-container">
             <a href="new_model" target="_self">
                 <button id="landing-button-primary" class="landing-button">Get started!</button>
             </a>
-            
             <a href="default_model" target="_self">
                 <button id="landing-button-secondary" class="landing-button">Use default model</button>
             </a>
-        
         </div>
+
     """, unsafe_allow_html=True)
 
 

@@ -40,7 +40,7 @@ def get_landing_video_styles():
         
         <style> 
                 
-            #landing_video {
+            #landing-video {
                 position: fixed;
                 right: 0;
                 bottom: 0;
@@ -85,9 +85,12 @@ def get_button_styles():
                 
             .landing-button-container {
                 position: fixed;
-                bottom: 80%;
+                bottom: 20%;
                 left: 50%;
                 transform: translateX(-50%);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
                 
             .landing-button {
