@@ -10,7 +10,7 @@ def get_landing_video():
     
     st.markdown(f"""
         
-        <video autoplay muted loop id="landing_video">  
+        <video autoplay muted loop id="landing-video">  
             <source src="{video_link}"> Your browser does not support HTML5 video.
         </video>
     
@@ -29,7 +29,7 @@ def get_landing_buttons():
                 <button id="landing-button-primary" class="landing-button">Get started!</button>
             </a>
             
-            <a href="default_model" id="default_model_button_link" target="_self">
+            <a href="default_model" target="_self">
                 <button id="landing-button-secondary" class="landing-button">Use default model</button>
             </a>
         
