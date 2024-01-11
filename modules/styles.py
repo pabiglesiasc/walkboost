@@ -33,6 +33,25 @@ def hide_sidebar_native_menu():
     
     """, unsafe_allow_html=True)
 
+def get_sidebar_logo():
+
+    st.sidebar.markdown("""
+                        
+    <style>
+        .sidebar-logo-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 15%;
+            margin-bottom: 15%;
+        }
+    </style>
+
+    <div class="sidebar-logo-container">
+        <img src="./app/static/logo.png" height="100">
+    </div>
+    
+    """, unsafe_allow_html=True)
+
 
 def get_landing_video_styles():
 
