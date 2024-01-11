@@ -1,5 +1,5 @@
 import streamlit as st
-from modules import styles
+from modules import styles, dataretriever
 import pandas as pd
 import numpy as np
 import time 
@@ -197,10 +197,12 @@ if 'project_name' in st.session_state.keys():
 
             if generate:
 
-                with st.spinner('Generating raw data. Please wait...'):
-                    time.sleep(10)
-
-                st.success('Done!')
+                with st.spinner('Downloading requested libraries. Please wait...'):
+                    dataretriever.get_yfinance()
+                    st.caption('yfinance successfully installed!')
+                with st.spinner('Downloading requested libraries. Please wait...'):
+                    dataretriever.get_yfinance()
+                    st.caption('yfinance successfully installed!')
 
 
     
