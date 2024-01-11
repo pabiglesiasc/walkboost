@@ -156,15 +156,48 @@ if 'project_name' in st.session_state.keys():
                 st.session_state['retriever_args'] = retriever_args
 
             with st.container(border=True):
+
                 st.markdown('Extra parameters:')
-                extra_stocks = st.text_area(
-                    "Add custom stocks (Ticker Symbols)",
-                    placeholder="Add ticker symbols, separated by ; (i.e. AAAA;BBBB;...;ZZZZ)",
-                )
-                macroecnomic_indicators = st.multiselect(
-                    'Choose macroeconomic indicators (Ticker Symbols)',
-                    options=['^GSPC', '^990100-USD-STRD', '^VIX', '^FVX', 'GC=F', 'CL=F', 'EUR=X', 'GBP=X', 'CNY=X', 'JPY=X'],
-                    default=['^GSPC', '^990100-USD-STRD', '^VIX', '^FVX', 'GC=F', 'CL=F', 'EUR=X', 'GBP=X', 'CNY=X', 'JPY=X'],
-                    disabled=not st.session_state.retriever_args['macroeconomic'].values[0] or st.session_state.project_name=='Default Project',
-                )
-                    
+
+                with st.expander('Add custom stocks (Ticker Symbols)', expanded=True):
+                
+                    extra_stocks = st.text_area(
+                        label='',
+                        placeholder="Add ticker symbols, separated by ; (i.e. AAAA;BBBB;...;ZZZZ)",
+                        disabled=st.session_state.project_name=='Default Project'
+                    )
+
+                    st.session_state['retriever_args']['extra_stocks'] = extra_stocks
+                
+                with st.expander('Choose macroeconomic indicators (Ticker Symbols)'):
+                
+                    macroeconomic_indicators = st.multiselect(
+                        label='',
+                        options=['^GSPC', '^990100-USD-STRD', '^VIX', '^FVX', 'GC=F', 'CL=F', 'EUR=X', 'GBP=X', 'CNY=X', 'JPY=X'],
+                        default=['^GSPC', '^990100-USD-STRD', '^VIX', '^FVX', 'GC=F', 'CL=F', 'EUR=X', 'GBP=X', 'CNY=X', 'JPY=X'],
+                        disabled=not st.session_state.retriever_args['macroeconomic'].values[0] or st.session_state.project_name=='Default Project',
+                    )
+
+                    st.session_state['retriever_args']['macroeconomic_indicators'] = macroeconomic_indicators
+
+                with st.expander('Number of highest-correlated stocks to retrieve'):
+
+                    number_correlated = st.slider(
+                        label='',
+                        value=1,
+                        min_value=1,
+                        max_value=5, 
+                        step=1,
+                        disabled=not st.session_state.retriever_args['correlated'].values[0] or st.session_state.project_name=='Default Project',
+                    )
+
+                    st.session_state['retriever_args']['number_correlated'] = number_correlated
+
+            generate = st.button('Generate raw dataset', use_container_width=True, type='primary')
+
+            if generate:
+
+                st.success('Done!')
+
+
+    
