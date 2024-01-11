@@ -5,7 +5,9 @@ from modules import styles
 def get_sidebar():
 
     styles.hide_sidebar_native_menu()
-    st.sidebar.header('Welcome to Boosting Walk', divider='red')
+    st.sidebar.container()
+    st.sidebar.image('./app/static/logo.png')
+    st.sidebar.title('Boosting Walk')
 
     new_project = st.sidebar.button('New project', use_container_width=True, type='primary', key='new_project')
     load_project = st.sidebar.button('Load project', use_container_width=True, type='secondary', key='load_project')
