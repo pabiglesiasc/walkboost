@@ -2,6 +2,7 @@ import streamlit as st
 from modules import styles
 import pandas as pd
 import time 
+from datetime import datetime
 
 st.set_page_config(layout="wide", 
                 page_icon="🪙",
@@ -31,16 +32,20 @@ if 'scheme_name' not in st.session_state.keys():
         st.session_state['scheme_creation_time'] = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')
 
     if load_scheme:
+        scheme_file = st.sidebar.file_uploader('Upload a valid scheme file (.json):', accept_multiple_files=False)
 
         if scheme_file: 
             st.session_state['scheme_name'] = scheme_file['scheme_name'] 
             st.session_state['scheme_description'] = 'Scheme description here.'
             st.session_state['scheme_creation_time'] = '%Y-%m-%d %H:%M:%S'
 
+        st.rerun()
+
     if default_scheme:
         st.session_state['scheme_name'] = 'Default Scheme'
         st.session_state['scheme_description'] = 'This is the default scheme. This system makes 1-day predictions on stock price movements...'
         st.session_state['scheme_creation_time'] = '2024-01-11 06:47:22'
+        st.rerun()
 
 else:
     
@@ -54,8 +59,10 @@ else:
 if 'scheme_name' in st.session_state.keys():
     
     if st.session_state.scheme_name != '':
+
+        if not new_scheme and not load_scheme and not default_scheme:
+            st.toast(f'{st.session_state.scheme_name} :green[successfully] loaded!', icon='✅')
         
-        st.toast(f'{st.session_state.scheme_name} :green[successfully] loaded!', icon='✅')
         st.title(st.session_state.scheme_name)
         st.caption(f'Created on {st.session_state.scheme_creation_time}')
         
@@ -69,8 +76,7 @@ if 'scheme_name' in st.session_state.keys():
             for _ in range(2): 
                 st.write("")
             
-            saved_scheme = st.download_button('Save Scheme', pd.DataFrame([0]).to_csv(), use_container_width=True, disabled=st.session_state.scheme_name=='Default Scheme')
-            
+            saved_scheme = st.download_button('Save Scheme', pd.DataFrame([0]).to_csv(), use_container_width=True, disabled=st.session_state.scheme_name=='Default Scheme')      
             close_scheme = st.button('Close Scheme', use_container_width=True, type='primary')
 
             if close_scheme:
@@ -82,8 +88,31 @@ if 'scheme_name' in st.session_state.keys():
         tab1, tab2, tab3 = st.tabs(['Data Retrieving', 'Data Preprocessing', 'Training Boosting Models'])
 
         with tab1: 
+
             overwrite = st.toggle('Overwrite', value=False, key='overwrite', disabled=st.session_state.scheme_name=='Default Scheme')
             
-            # pd.
+            default_retriever_args = pd.DataFrame(
+                [{
+                    "Start Date": pd.Timestamp('2000-01-01'), 
+                    "End Date": pd.Timestamp('2023-12-31'), 
+                    "Stocks": "DJIA", 
+                    "Include macroeconomic assets": True, 
+                    "Number of correlated stocks": 1, 
+                    "Minimum trading years": 20
+                }]
+            )
+            
+            retriever_args = st.data_editor(
+                default_retriever_args, 
+                disabled=st.session_state.scheme_name=='Default Scheme',
+                num_rows="fixed", 
+                hide_index=True, 
+                use_container_width=True)
+
+            st.session_state['retriever_args'] = retriever_args
+
+            
+
+
 
 st.text(dict(st.session_state.items()))
