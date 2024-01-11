@@ -2,91 +2,34 @@ import streamlit as st
 import os
 from modules import styles
 
-def get_landing_video():
-
-    styles.get_landing_video_styles()
-    
-    video_link = "./app/static/landing_background_video.mp4"
-    
-    st.markdown(f"""
-        
-        <video autoplay muted loop id="landing-video">  
-            <source src="{video_link}"> Your browser does not support HTML5 video.
-        </video>
-    
-    """, unsafe_allow_html=True)
-
-
-def get_landing_buttons():
-
-    styles.get_button_styles()
-    
-    st.markdown("""
-            
-        <div class="landing-button-container">
-            <a href="new_model" target="_self">
-                <button id="landing-button-primary" class="landing-button">Get started!</button>
-            </a>
-            <a href="default_model" target="_self">
-                <button id="landing-button-secondary" class="landing-button">Use default model</button>
-            </a>
-        </div>
-
-    """, unsafe_allow_html=True)
-
-
 def get_sidebar():
 
     styles.hide_sidebar_native_menu()
+    st.sidebar.header('Welcome to Boosting Walk', divider='red')
 
-    st.sidebar.header('Boosting Walk', divider='red')
-    st.sidebar.link_button('New Project', url='new_model', use_container_width=True)
-    
-    for project in os.listdir('./pages'):
+    new_project = st.sidebar.button('New project', use_container_width=True, type='primary', key='new_project')
+    load_project = st.sidebar.button('Load project', use_container_width=True, type='secondary', key='load_project')
+
+    if new_project:
         
-        if project!='new_model.py':
+        st.sidebar.text_input("Please enter the name of your new project:", key='project_name')
+
+    if load_project:
+
+        project_file = st.sidebar.file_uploader('Upload a valid project file (.json):', accept_multiple_files=False)
+
+        if project_file:
             
-            st.sidebar.link_button(project.replace('.py', '').replace('_', ' ').title(), url=project.replace('.py', ''), use_container_width=True)
+            st.session_state['project_name'] = project_file['project_name'] 
 
-def get_project_header(project_name):
+    st.sidebar.divider()
+    default = st.sidebar.button('Default project', use_container_width=True, type='secondary', key='default_project')
 
-    st.set_page_config(layout="centered", 
-                   page_icon="",
-                   page_title=project_name,
-                   initial_sidebar_state='collapsed')
-    
-    col1, col2 = st.columns([.6, .4], gap='medium')
+    if default:
+        st.session_state['project_name'] = 'Default Project'
 
-    with col1:  
-        st.header(project_name, divider='red')
-    
-    with col2:
-        remove_project = st.button('Remove Project', type='primary', key='remove', use_container_width=True)
 
-    if st.session_state.remove:
-        
-        del st.session_state.remove
-        os.remove(f"pages/{project_name}.py")
-        st.success(f'The project {project_name} has been successfully removed.')
-        
-        col1, col2, col3 = st.columns([.3, .3, .4])
-        
-        with col1:
-            st.markdown(
-                '''
-                <a href="new_model" target="_self">
-                    <button class="primary-button">Create custom model</button>
-                </a>
-                ''', unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown(
-                '''
-                <a href="default_model" target="_self">
-                    <button class="secondary-button">Use default model</button>
-                </a>
-                ''', unsafe_allow_html=True)
+def get_project_header():
 
-    else:
-    
-        tab1, tab2, tab3 = st.tabs(['Data Retrieving', 'Data Preprocessing', 'Training Boosting Models'])
+    st.header(st.session_state.project_name, divider='red')
+    tab1, tab2, tab3 = st.tabs(['Data Retrieving', 'Data Preprocessing', 'Training Boosting Models'])

@@ -85,7 +85,7 @@ def get_button_styles():
                 
             .landing-button-container {
                 position: fixed;
-                bottom: 20%;
+                bottom: 25%;
                 left: 50%;
                 transform: translateX(-50%);
                 display: flex;
@@ -102,7 +102,8 @@ def get_button_styles():
                 margin: 5px;
                 cursor: pointer;
                 border-radius: 10px;
-                opacity: 0; 
+                opacity: 0;
+                background-color: #282D34;
                 animation: fadeInUp 1s ease forwards;
                 animation-delay: 1s; 
             }
