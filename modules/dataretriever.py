@@ -2,9 +2,6 @@ import pandas as pd
 import numpy as np
 
 def get_yfinance():
-    import subprocess
-    import sys
-    subprocess.check_call([sys.executable, "-m", "pip", "install", 'yfinance'])
     import yfinance as yf
 
 
