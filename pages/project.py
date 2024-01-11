@@ -169,7 +169,7 @@ if 'project_name' in st.session_state.keys():
 
                     st.session_state['retriever_args']['extra_stocks'] = extra_stocks
                 
-                with st.expander('Choose macroeconomic indicators (Ticker Symbols)'):
+                with st.expander('Choose macroeconomic indicators (Ticker Symbols)', expanded=st.session_state.retriever_args['macroeconomic'].values[0]):
                 
                     macroeconomic_indicators = st.multiselect(
                         label='',
@@ -178,9 +178,9 @@ if 'project_name' in st.session_state.keys():
                         disabled=not st.session_state.retriever_args['macroeconomic'].values[0] or st.session_state.project_name=='Default Project',
                     )
 
-                    st.session_state['retriever_args']['macroeconomic_indicators'] = macroeconomic_indicators
+                    st.session_state['retriever_args']['macroeconomic_indicators'] = ';'.join(macroeconomic_indicators)
 
-                with st.expander('Number of highest-correlated stocks to retrieve'):
+                with st.expander('Number of highest-correlated stocks to retrieve', expanded=st.session_state.retriever_args['correlated'].values[0]):
 
                     number_correlated = st.slider(
                         label='',
@@ -196,6 +196,9 @@ if 'project_name' in st.session_state.keys():
             generate = st.button('Generate raw dataset', use_container_width=True, type='primary')
 
             if generate:
+
+                with st.spinner('Generating raw data. Please wait...'):
+                    time.sleep(10)
 
                 st.success('Done!')
 
