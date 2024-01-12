@@ -10,7 +10,7 @@ styles.hide_sidebar()
 styles.get_landing_video_styles()
 styles.get_button_styles()
 
-video_link = "./app/static/landing_background_video.mp4"
+video_link = "./app/static/web/landing_background_video.mp4"
 
 st.markdown(f"""
     

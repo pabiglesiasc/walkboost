@@ -1,0 +1,14 @@
+{
+    "project_name": "Default Project",
+    "project_description": "This is the default project. This system makes 1-day predictions on stock price movements...",
+    "project_creation_time": "2024-01-11 06:47:22",
+    "start_date": "2000-01-01",
+    "end_date": "2023-12-31",
+    "stocks": "DJIA30",
+    "macroeconomic": true,
+    "correlated": true,
+    "trading_years": 20,
+    "custom_stocks": "",
+    "macroeconomic_indicators": ["^GSPC","^990100-USD-STRD","^VIX","^FVX","GC=F","CL=F","EUR=X","GBP=X","CNY=X","JPY=X"],
+    "number_correlated": 1
+}

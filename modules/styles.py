@@ -47,7 +47,7 @@ def get_sidebar_logo():
     </style>
 
     <div class="sidebar-logo-container">
-        <img src="./app/static/logo.png" height="100">
+        <img src="./app/static/web/logo.png" height="100">
     </div>
     
     """, unsafe_allow_html=True)
