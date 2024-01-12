@@ -1,6 +1,7 @@
 [server]
 enableStaticServing = true
 enableXsrfProtection = false
+enableWebsocketCompression = false
 
 [theme]
 base="dark"

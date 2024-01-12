@@ -4,6 +4,7 @@ import os
 import json
 import pandas as pd
 import numpy as np
+from pygwalker.api.streamlit import StreamlitRenderer, init_streamlit_comm
 import time 
 from datetime import date, datetime
 
@@ -72,20 +73,29 @@ def get_body():
                         "trading_years": st.session_state.trading_years
                     }]
                 )
+
+                def update_retriever_args():
+                    st.write(st.session_state.new_retriever_args)
+                    for k, v in st.session_state.new_retriever_args['edited_rows'][0].items():
+                        st.session_state[k] = v
+                    del st.session_state['new_retriever_args']
+
                 
-                retriever_args = st.data_editor(
+                st.data_editor(
                     default_retriever_args, 
                     disabled=st.session_state.project_name=='Default Project',
                     num_rows="fixed", 
                     hide_index=True, 
                     use_container_width=True,
+                    key='new_retriever_args',
+                    on_change=update_retriever_args,
                     column_config={
                         "start_date": st.column_config.DateColumn(
                             "Start Date", 
                             help='The start date for the data retrieval.',
                             required=True, 
                             min_value=date(1980, 1, 1), 
-                            max_value=date.today()
+                            max_value=date.today(),
                         ), 
                         "end_date": st.column_config.DateColumn(
                             "End Date",
@@ -98,7 +108,7 @@ def get_body():
                             "Stocks", 
                             help='The stock universe for the data retrieval.',
                             required=True, 
-                            options=['DJIA30', 'SP500', 'NASDAQ100']
+                            options=['DJIA30', 'SP500', 'NASDAQ100', 'Custom']
                         ), 
                         "macroeconomic": st.column_config.CheckboxColumn(
                             "Include macroeconomic assets", 
@@ -114,17 +124,10 @@ def get_body():
                             "Minimum trading years", 
                             help="Choose minimum trading years to keep each stock. Stock with less than 'Minimum trading years'*252 trading days will be discarded.",
                             min_value=0,
-                            max_value=int((default_retriever_args['end_date'].values[0] - default_retriever_args['start_date'].values[0]).days/252)
+                            max_value=int((pd.Timestamp(st.session_state.end_date).date() - pd.Timestamp(st.session_state.start_date).date()).days/365)
                         ),
                     },
                 )
-
-            st.session_state['start_date'] = retriever_args['start_date'].values[0].strftime('%Y-%m-%d')
-            st.session_state['end_date'] = retriever_args['end_date'].values[0].strftime('%Y-%m-%d')
-            st.session_state['stocks'] = retriever_args['stocks'].values[0]
-            st.session_state['macroeconomic'] = retriever_args['macroeconomic'].values[0]
-            st.session_state['correlated'] = retriever_args['correlated'].values[0]
-            st.session_state['trading_years'] = retriever_args['trading_years'].values[0]
 
             with st.container(border=True):
 
@@ -178,10 +181,12 @@ def get_body():
             if generate:
 
                 with st.spinner('Downloading requested libraries. Please wait...'):
-                    dataretriever.get_yfinance()
-                    st.caption('yfinance successfully installed!')
+                    
+                    data = dataretriever.get_data(st.session_state)
 
-st.text(st.session_state)
+
+
+
 
 styles.hide_sidebar_native_menu()
 styles.get_sidebar_logo()
@@ -215,14 +220,14 @@ if 'project_name' not in st.session_state.keys():
         st.session_state['project_creation_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     if load_project:
-        
-        project_file = st.sidebar.file_uploader('Upload a valid project file (.json):', accept_multiple_files=False, type='json')
-        
-        if project_file:
 
-            project_file = json.loads(project_file.read())
+        def read_project_json():
+            project_file = json.loads(st.session_state.json.read())
             for k, v in project_file.items():
                 st.session_state[k] = v
+            del st.session_state['json']
+
+        st.sidebar.file_uploader('Upload a valid project file (.json):', accept_multiple_files=False, type='json', key='json', on_change=read_project_json)
 
     if default_project:
 
@@ -239,8 +244,6 @@ else:
         st.toast(f'There is a project in use. Please :orange[close this project] before opening a new one.', icon='⚠️')
 
     get_body()
-
-st.text(st.session_state)
 
 
     
