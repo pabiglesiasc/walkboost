@@ -4,12 +4,12 @@ import os
 import json
 import pandas as pd
 import numpy as np
-import streamlit_elements
+import seaborn as sns
 import time 
 from datetime import date, datetime
 
-# import sys
-# os.system(f"{sys.executable} -m pip install streamlit-elements")
+import sys
+os.system(f"{sys.executable} -m pip install seaborn")
 
 st.set_page_config(layout="wide", 
                 page_icon="🪙",
@@ -183,17 +183,27 @@ def get_body():
 
             if generate:
 
-                with st.spinner('Downloading requested libraries. Please wait...'):
+                with st.spinner('Creating raw dataset. Please wait...'):
 
-                    init_streamlit_comm()
                     data = dataretriever.get_data(st.session_state)
-                    data = data.reset_index()
-                    data.Date = data.Date.astype(str)
-                    @st.cache_resource
-                    def get_pyg_html():
-                        html = get_streamlit_html(data.reset_index(), spec="./gw_config.json", use_kernel_calc=True, debug=False)
-                        return html   
-                    components.html(get_pyg_html(), width=1280, height=720, scrolling=True)
+
+                    with st.expander("Analyze raw dataset:", expanded=True):
+                        
+                        st.dataframe(data.sort_index(), use_container_width=True)
+                        col1, col2 = st.columns(.2, .8)
+
+                        with col1:
+                            stock = st.selectbox(
+                                label="Choose a stock", 
+                                options=data.index.get_level_values(1).unique().tolist()
+                            )
+                        
+                        with col2:
+                            st.pyplot(sns.lineplot(data.xs(stock, level=1), x='Date', y='Close'))
+
+
+
+
 
 
 
