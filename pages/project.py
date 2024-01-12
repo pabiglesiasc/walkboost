@@ -64,7 +64,7 @@ def get_body():
 
             with st.container(border=True):
 
-                st.markdown('Main parameters:')
+                st.markdown('Main parameters')
 
                 default_retriever_args = pd.DataFrame(
                     [{
@@ -134,7 +134,7 @@ def get_body():
 
             with st.container(border=True):
 
-                st.markdown('Extra parameters:')
+                st.markdown('Additional parameters')
 
                 def set_custom_stocks():
                     st.session_state['custom_stocks'] = st.session_state.new_custom_stocks
@@ -179,33 +179,62 @@ def get_body():
                         on_change=set_number_correlated
                     )
 
-            generate = st.button('Generate raw dataset', use_container_width=True, type='primary')
+            if 'new_generation' not in st.session_state.keys():
+                st.session_state['new_generation'] = False
+            
+            def new_generation():
+                st.session_state['new_generation'] = True
 
-            if generate:
+            st.button('Apply', type='secondary', on_click=new_generation)
+            
+            if st.session_state['new_generation']:
 
                 with st.spinner('Creating raw dataset. Please wait...'):
 
-                    data = dataretriever.get_data(st.session_state)
+                    args = ['stocks', 'custom_stocks', 'start_date', 'end_date', 'macroeconomic', 'macroeconomic_indicators', 'correlated', 'number_correlated', 'trading_years']    
+                    data = dataretriever.get_data(**{k:v for k, v in st.session_state.items() if k in args})
 
-                    with st.expander("Analyze raw dataset:", expanded=True):
-                        
-                        st.dataframe(data.sort_index(), use_container_width=True)
-                        col1, col2 = st.columns(.2, .8)
+                    with st.container(border=True):
 
-                        with col1:
-                            stock = st.selectbox(
-                                label="Choose a stock", 
-                                options=data.index.get_level_values(1).unique().tolist()
-                            )
-                        
-                        with col2:
-                            st.pyplot(sns.lineplot(data.xs(stock, level=1), x='Date', y='Close'))
+                        st.markdown('Analysis dashboard')
 
+                        with st.expander("Raw dataset", expanded=False):
+                            
+                            st.dataframe(data.sort_index(), use_container_width=True)
 
+                        with st.expander("Stock performance", expanded=True):
 
+                            cont = st.container() 
 
+                            col1, col2, col3 = st.columns([.4, .4, .2])
 
+                            with col1:
+                                stocks = st.multiselect(
+                                    label="Select stocks", 
+                                    options=data.index.get_level_values(1).unique().tolist(),
+                                    default=data.index.get_level_values(1).unique().tolist()[0:5]
+                                )
 
+                            with col2:
+                                start_time = st.slider(
+                                    label="Select start date", 
+                                    format="MM/DD/YY",
+                                    value = date(2018, 1, 1),
+                                    min_value=data.index.get_level_values(0).unique().tolist()[0].date(),
+                                    max_value=data.index.get_level_values(0).unique().tolist()[-1].date()
+                                )
+
+                            with col3:
+                                for _ in range(2):
+                                    st.write("")
+                                normalize = st.toggle(label="Normalize Returns", value=True)
+
+                            with cont:
+
+                                plot_data = data.loc[data.index.get_level_values(1).isin(stocks), 'Close'].unstack()
+                                plot_data = plot_data.loc[start_time.strftime("%Y-%m-%d"):]
+                                plot_data = plot_data.pct_change().add(1).fillna(1).cumprod() if normalize else plot_data
+                                st.line_chart(plot_data, use_container_width=True, height=480)
 
 
 
