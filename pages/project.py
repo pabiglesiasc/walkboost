@@ -4,9 +4,12 @@ import os
 import json
 import pandas as pd
 import numpy as np
-from pygwalker.api.streamlit import StreamlitRenderer, init_streamlit_comm
+import streamlit_elements
 import time 
 from datetime import date, datetime
+
+# import sys
+# os.system(f"{sys.executable} -m pip install streamlit-elements")
 
 st.set_page_config(layout="wide", 
                 page_icon="🪙",
@@ -181,8 +184,16 @@ def get_body():
             if generate:
 
                 with st.spinner('Downloading requested libraries. Please wait...'):
-                    
+
+                    init_streamlit_comm()
                     data = dataretriever.get_data(st.session_state)
+                    data = data.reset_index()
+                    data.Date = data.Date.astype(str)
+                    @st.cache_resource
+                    def get_pyg_html():
+                        html = get_streamlit_html(data.reset_index(), spec="./gw_config.json", use_kernel_calc=True, debug=False)
+                        return html   
+                    components.html(get_pyg_html(), width=1280, height=720, scrolling=True)
 
 
 
