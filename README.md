@@ -1,2 +1,2 @@
-# boosting-walk
-AI hybrid-system to beat the market
+# Walk Boost
+A web application to create trading systems based on boosting algorithms
